@@ -27,7 +27,7 @@ TAG_DATA = {
 with gr.Blocks() as demo:
     gr.Markdown("# Tag Group Helper Demo")
     gr.Markdown("Click on the tags below to add them to the prompt textboxes.")
-
+    gr.Markdown("<span>💻 <a href='https://github.com/DEVAIEXP/gradio_component_taggrouphelper'>GitHub Code</a></span>")
     with gr.Row():
         with gr.Column(scale=2): # Give more space to the textboxes
             # Create the target Textbox and give it a unique `elem_id`.

@@ -8,12 +8,17 @@
 	export let target_textbox_id: string;
 	export let separator: string = ", ";
 	export let label: string;
+	export let font_size_scale: number = 100;
+	export let show_label: boolean = true;
 	export let visible: boolean = true;
 	export let elem_id: string = "";
 	export let elem_classes: string[] = [];
 	export let container: boolean = true;
 	export let scale: number | null = null;
 	export let min_width: number | undefined = undefined;
+	export let height: number | undefined = undefined;
+	export let width: number | undefined = undefined;
+	export let interactive: boolean;
 	export let loading_status: LoadingStatus;
 	export let gradio: Gradio<{ clear_status: LoadingStatus; }>;
 
@@ -67,7 +72,7 @@
 </script>
 
 <!-- The main structure uses the standard Gradio <Block> component. -->
-<Block {visible} {elem_id} {elem_classes} {container} {scale} {min_width}>
+<Block {visible} {elem_id} {elem_classes} {container} {scale} {min_width} height={height || undefined}>
 	{#if loading_status}
 		<StatusTracker
 			autoscroll={gradio.autoscroll}
@@ -77,10 +82,16 @@
 		/>
 	{/if}
 
-	{#if label}
+	{#if label && show_label}
 		<span class="label">{label}</span>
 	{/if}
-	<div class="container">
+	<div 
+		class="container" 
+		style:width={width ? `${width}px` : undefined}
+		style:height={height ? `${height}px` : undefined}
+		style:overflow-y={height ? 'auto' : undefined}
+		style="--font-scale: {font_size_scale / 100};"
+	>
 		<!-- We iterate over the 'value' prop, which contains our tag groups -->
 		{#if value}
 			{#each Object.entries(value) as [groupName, tags]}
@@ -98,6 +109,7 @@
 									class="tag-button"
 									style="background-color: {tagColors[i % tagColors.length]};"
 									on:click={() => addTagToPrompt(tag)}
+									disabled={!interactive}
 								>
 									{tag}
 								</button>
@@ -115,7 +127,10 @@
 		border: 1px solid var(--border-color-primary);
 		border-radius: var(--radius-lg);
 		padding: 8px;
-		background: var(--background-fill-secondary);
+		background: var(--background-fill-secondary);	
+		display: flex;
+		flex-direction: column;
+		height: 100%;
 	}
 	.label {
 		display: block;
@@ -135,15 +150,15 @@
 		display: flex;
 		justify-content: space-between;
 		align-items: center;
-		width: 100%;
-		padding: 8px 12px;				
+		width: 100%;			
+		padding: calc(8px * var(--font-scale)) 12px;		
 		background-color: var(--neutral-100, #f3f4f6); 				
 		color: var(--neutral-700, #374151);
 		border: 1px solid var(--border-color-primary);
 		border-radius: var(--radius-md);
 		text-align: left;
 		cursor: pointer;
-		font-size: 1rem; 
+		font-size: calc(1rem * var(--font-scale)); 
 		transition: background-color 0.2s;
 	}
 	.group-header:hover {		
@@ -154,7 +169,7 @@
 		font-weight: 600;
 	}
 	.group-toggle-icon {
-		font-size: 1.2rem;
+		font-size: calc(1.2rem * var(--font-scale));
 		font-weight: bold;
 	}
 	.tags-container {
@@ -162,12 +177,13 @@
 		flex-wrap: wrap;
 		gap: 8px;
 		padding: 12px 8px;
+		overflow-y: auto;
 	}
-	.tag-button {
-		padding: 4px 10px;
+	.tag-button {		
+		padding: calc(4px * var(--font-scale)) calc(10px * var(--font-scale));
 		border: 1px solid #d1d5db;
 		border-radius: 12px;
-		font-size: 0.875rem;
+		font-size: calc(0.875rem * var(--font-scale));
 		cursor: pointer;
 		transition: filter 0.2s;
 		color: #1f2937;
